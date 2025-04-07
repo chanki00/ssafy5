@@ -1,12 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>회원가입</title>
     <link rel="stylesheet" th:href="@{/css/header.css}">
+    <link rel="stylesheet" th:href="@{/css/signup.css}">
 </head>
 <body>
+
+    <!-- 공통 헤더 -->
     <div th:replace="fragments/header :: header"></div>
+
+    <main>
+        <h1>회원가입</h1>
+        <form action="#" method="post">
+
+            <!-- 이름 -->
+            <div class="form-group">
+                <label for="name">이름</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+
+            <!-- 아이디 -->
+            <div class="form-group">
+                <label for="id">아이디</label>
+                <div class="id-check-wrap">
+                    <input type="text" id="id" name="id" required>
+                    <button type="button" class="check-btn" onclick="checkId()">중복확인</button>
+                </div>
+                <p id="id-result" class="msg"></p>
+            </div>
+
+            <!-- 비밀번호 -->
+            <div class="form-group">
+                <label for="pw">비밀번호</label>
+                <input type="password" id="pw" name="pw" required>
+            </div>
+
+            <!-- 비밀번호 확인 -->
+            <div class="form-group">
+                <label for="pwcheck">비밀번호 확인</label>
+                <input type="password" id="pwcheck" name="pwcheck" required oninput="checkPasswordMatch()">
+                <p id="pw-result" class="msg"></p>
+            </div>
+
+            <!-- 이메일 -->
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <!-- 제출 버튼 -->
+            <button type="submit">회원가입</button>
+        </form>
+    </main>
+
+    <!-- JavaScript -->
+    <script>
+        function checkId() {
+            const userId = document.getElementById("id").value;
+
+            fetch(`/user/check-id?id=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const result = document.getElementById("id-result");
+                    if (data.exists) {
+                        result.textContent = "이미 사용 중인 아이디입니다.";
+                        result.style.color = "red";
+                    } else {
+                        result.textContent = "사용 가능한 아이디입니다.";
+                        result.style.color = "green";
+                    }
+                });
+        }
+
+        function checkPasswordMatch() {
+            const pw = document.getElementById("pw").value;
+            const pwcheck = document.getElementById("pwcheck").value;
+            const result = document.getElementById("pw-result");
+
+            if (pw === pwcheck) {
+                result.textContent = "비밀번호가 일치합니다.";
+                result.style.color = "green";
+            } else {
+                result.textContent = "비밀번호가 일치하지 않습니다.";
+                result.style.color = "red";
+            }
+        }
+    </script>
+
 </body>
 </html>
